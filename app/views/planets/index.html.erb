@@ -7,6 +7,10 @@
   <%= stylesheet_link_tag    "application", :media => "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
+  <% include_gon %>
+  <script type="text/javascript">
+    var planets = gon.planets;
+  </script>
   <script src="http://www.google.com/jsapi?key=ABQIAAAAuPsJpk3MBtDpJ4G8cqBnjRRaGTYH6UMl8mADNa0YKuWNNa8VNxQCzVBXTx2DYyXGsTOxpWhvIG7Djw" type="text/javascript"></script>
   <script type="text/javascript">
   var googleEarth = null;
@@ -22,6 +26,8 @@
         alert(ra + " " + dec);
         var lookAt = googleEarth.getView().copyAsLookAt(googleEarth.ALTITUDE_RELATIVE_TO_GROUND);
         lookAt.set(ra, dec, 0, googleEarth.ALTITUDE_RELATIVE_TO_GROUND, 0, 0, 0);
+        googleEarth.getView().setAbstractView(lookAt);
+
       }
     });
   });
@@ -55,8 +61,10 @@
   }
   
   </script>
+
 </head>
  <body>
+  <%= @planets.to_json %>
 <h1>Confirmed Planets & Google Earth API </h1>
  <div class="divOne"> 
 <table>
