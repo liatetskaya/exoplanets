@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Exoplanets</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <%= stylesheet_link_tag    "application", :media => "all" %>
+  <%= javascript_include_tag "application" %>
+  <%= csrf_meta_tags %>
+  <script src="http://www.google.com/jsapi?key=ABQIAAAAuPsJpk3MBtDpJ4G8cqBnjRRaGTYH6UMl8mADNa0YKuWNNa8VNxQCzVBXTx2DYyXGsTOxpWhvIG7Djw" type="text/javascript"></script>
+  <script type="text/javascript">
+  var googleEarth = null;
+  google.load("earth", "1");
+
+  $(document).ready(function() {
+    google.earth.createInstance('sky', initCallback, failureCallback);
+    $('.sky-object').click(function() {
+      ra = parseFloat($(this).find('td.ra').text());
+      dec = parseFloat($(this).find('td.dec').text());
+
+      if(googleEarth != null && ra != null && dec != null) {
+        alert(ra + " " + dec);
+        var lookAt = googleEarth.getView().copyAsLookAt(googleEarth.ALTITUDE_RELATIVE_TO_GROUND);
+        lookAt.set(ra, dec, 0, googleEarth.ALTITUDE_RELATIVE_TO_GROUND, 0, 0, 0);
+      }
+    });
+  });
+    
+  function initCallback(ge) {
+    googleEarth = ge;
+    ge.getOptions().setMapType(ge.MAP_TYPE_SKY);
+    
+      // add a navigation control
+    ge.getNavigationControl().setVisibility(ge.VISIBILITY_AUTO);
+          
+    setTimeout(function() {
+        // Zoom in on a nebula.
+      var oldFlyToSpeed = ge.getOptions().getFlyToSpeed();
+      ge.getOptions().setFlyToSpeed(.2);  // Slow down the camera flyTo speed.
+      var lookAt = ge.getView().copyAsLookAt(ge.ALTITUDE_RELATIVE_TO_GROUND);
+      lookAt.set(41.28509187215, -169.2448684551622, 0,
+                   ge.ALTITUDE_RELATIVE_TO_GROUND, 262.87, 0, 162401);
+        // Also try:
+        //   lookAt.set(-59.65189337195337, -18.799770300376053, 0,
+        //              ge.ALTITUDE_RELATIVE_TO_GROUND, 0, 0, 36817);
+      ge.getView().setAbstractView(lookAt);
+      ge.getOptions().setFlyToSpeed(oldFlyToSpeed);
+      //ge.getWindow().setVisibility(true);
+    }, 500);  // Start the zoom-in after one second.
+    
+    ge.getWindow().setVisibility(true);
+  }
+  
+  function failureCallback(errorCode) {
+  }
+  
+  </script>
+</head>
+ <body>
+<h1>Confirmed Planets & Google Earth API </h1>
+ <div class="divOne"> 
+<table>
+  <tr>
+    <th>Host</th>
+    <th>RA</th>
+    <th>DEC</th>
+    <th></th>
+  </tr>
+
+<% @planets.each do |record| %>
+  <tr class="sky-object">
+    <td class="pl-hostname"><%= record[:pl_hostname] %></td>
+    <td class="ra"><%= record[:ra] %></td>
+    <td class="dec"><%= record[:dec] %></td>
+  </tr>
+<% end %>
+</table>
+</div> 
+ <div class="divTwo" id="sky"></div> 
+</div>
+<br />
+
+</body>
+</html>
